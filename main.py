@@ -1,9 +1,10 @@
 import random as r
-from colorama import Fore
+from colorama import init, Fore, Style
 import os
 import time
 import json
 import datetime as dt
+init(autoreset=False)
 
 def cls() -> None:
     os.system('cls' if os.name=='nt' else 'clear')
@@ -18,27 +19,35 @@ def print_ui() -> None:
     cls()
     print_info()
     if game_state == "menu":
-        print(f"Press {str(PULL_KEYBIND_TEXT)} to spin")
+        print(f"Current Balance 💲: {money}")
+        print(f"Press {str(PULL_KEYBIND_TEXT)} to spin or press {EXIT_KEYBIND_TEXT} to EXIT")
     elif game_state == "pulling":
         print("Game state pulling")
     elif game_state == "result":
-        print("Game state result")
+        print(f"Current Balance 💲: {money} + {temp_money}")
     else:
         print(f"{Fore.RED} Error in print_ui function, invalid game_state")
 
 
 def generate_player_data() -> None:
-    default_data: dict[str, str] = {"money":"50","last login":f"{dt.datetime.now()}"}
+    default_data: dict[str, str] = {"money":"50","last income":f"{dt.datetime.now()}"}
     with open("player.json", "w") as file:
         json.dump(default_data, file, indent=4)
-    print("created player file")    
+    print("created player file")
+
+def save_player_data() -> None:
+    save_data: dict[str, str] = {"money":f"{money}","last income":f"{dt.datetime.now()}"}
+    with open("player.json", "w") as file:
+        json.dump(save_data, file, indent=4)
+    print(f"{Style.DIM}%saved player data% {Style.RESET_ALL}") 
 
 def get_player_data() -> dict:
-
-    ##Check if file exists.
-    file_exists: bool = False
+    ## Set Defaults
+    player_data: dict = {}
+    ## Check if file exists.
+    
     if os.path.isfile("player.json"):
-        file_exists = True
+        pass
     else:
         generate_player_data()
     
@@ -48,13 +57,24 @@ def get_player_data() -> dict:
     except OSError:
         print("Player file could not be opened")
     else:
-        print("sometrhging")
+        player_data = json.load(player_data_file)
+        print("player data loaded")
+        return player_data
+
+
+def slot_result() -> list[int, str]:
+    print("test")
+    return [1, "abbc"]
+
+
+
+
+
 
 
 
 
 player_data: dict = get_player_data()
-input()
 
 
 ###### GAME STATES ######
@@ -67,10 +87,17 @@ last_game_state: str = game_state
 PULL_KEYBIND: int = ord("R")
 PULL_KEYBIND_TEXT: str = chr(PULL_KEYBIND)
 
-player_data = []
+MENU_KEYBIND: int = ord("E")
+MENU_KEYBIND_TEXT: str = chr(MENU_KEYBIND)
 
-pull_timer = 0
+EXIT_KEYBIND: int = ord("V")
+EXIT_KEYBIND_TEXT: str = chr(EXIT_KEYBIND)
 
+pull_timer: int = 0
+
+temp_money: int = 0
+test: str = player_data["money"]
+money: int = int(test)
 
 print_ui()
 
@@ -82,25 +109,38 @@ while True: ##### Main Loop
     user_input: str = ""
     match game_state:
         case "menu":
+            print_ui()
             user_input: str = input().capitalize()
-            if (user_input == "R"):
+            if (user_input == PULL_KEYBIND_TEXT):
                 game_state = "pulling"
         case "pulling":
+            print_ui()
             print(f"Pulling! {str(pull_timer)}")
             pull_timer += 1
             time.sleep(0.333)
             if pull_timer == 9:
                 game_state = "result"
+                pull_timer = 0
+                temp_money = r.randrange(-50, 50)
         case "result":
-            print("result screen")
+            print_ui()
+            money += temp_money
+            temp_money = 0
+            save_player_data()
+            print(f"Press {MENU_KEYBIND_TEXT} to go back to the menu or press {PULL_KEYBIND_TEXT} to pull again")
             user_input: str = input().capitalize()
+            if (user_input == MENU_KEYBIND_TEXT):
+                game_state = "menu"
+            if (user_input == PULL_KEYBIND_TEXT):
+                game_state = "pulling"
         case _:
             print("{Fore.RED} Error in match game_state, invalid game_state")
         
 
 
 
-    if user_input == "E":
+    if user_input == EXIT_KEYBIND_TEXT:
+        save_player_data()
         exit(0)
 
     last_game_state: str = game_state
