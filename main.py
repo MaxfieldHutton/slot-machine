@@ -41,9 +41,9 @@ def save_player_data() -> None:
         json.dump(save_data, file, indent=4)
     print(f"{Style.DIM}%saved player data% {Style.RESET_ALL}") 
 
-def get_player_data() -> dict:
+def get_player_data() -> dict[str, str]:
     ## Set Defaults
-    player_data: dict = {}
+    player_data: dict[str, str] = {}
     ## Check if file exists.
     
     if os.path.isfile("player.json"):
@@ -74,7 +74,7 @@ def slot_result() -> list[int, str]:
 
 
 
-player_data: dict = get_player_data()
+player_data: dict[str, str] = get_player_data()
 
 
 ###### GAME STATES ######
