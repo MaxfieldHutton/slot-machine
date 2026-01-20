@@ -60,6 +60,7 @@ def get_player_data() -> dict[str, str]:
         player_data = json.load(player_data_file)
         print("player data loaded")
         return player_data
+    
 
 
 def slot_result() -> list[int, str]:
@@ -141,6 +142,7 @@ while True: ##### Main Loop
 
     if user_input == EXIT_KEYBIND_TEXT:
         save_player_data()
+        cls()
         exit(0)
 
     last_game_state: str = game_state
