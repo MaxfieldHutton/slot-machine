@@ -42,10 +42,9 @@ def save_player_data() -> None:
     print(f"{Style.DIM}%saved player data% {Style.RESET_ALL}") 
 
 def get_player_data() -> dict[str, str]:
-    ## Set Defaults
     player_data: dict[str, str] = {}
+
     ## Check if file exists.
-    
     if os.path.isfile("player.json"):
         pass
     else:
@@ -61,11 +60,39 @@ def get_player_data() -> dict[str, str]:
         print("player data loaded")
         return player_data
     
+def get_pattern_data() -> dict[str, int]:
+    pattern_data: dict[str, int]
 
+    ##Check if file exists.
+    if os.path.isfile("patterns.json"):
+        pass
+    else:
+        exit("Missing patterns.json")
+    
+    patterns_file = open("patterns.json", "r")
+    patterns_data = json.load(patterns_file)
+    print(patterns_data)
 
-def slot_result() -> list[int, str]:
-    print("test")
-    return [1, "abbc"]
+def slot_result() -> str:
+    symbols_data: dict[str, int]
+
+    ##Check if file exists.
+    if os.path.isfile("symbols.json"):
+        pass
+    else:
+        exit("Missing symbols.json")
+
+    symbol_file = open("symbols.json", "r")
+    symbol_data = json.load(symbol_file)
+    print(symbol_data)
+
+    symbol_index: int = r.randrange(0, len(symbol_data), 1)
+    print(symbol_index)
+
+    keys = list(symbol_data.keys())
+    symbol: str = keys[symbol_index]
+
+    return symbol
 
 
 
